@@ -1,7 +1,8 @@
 import AddNoteModal from "@/components/AddNoteModal"
 import NoteList from "@/components/NoteList"
+import noteService from "@/services/noteService"
 import { useRouter } from "expo-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     ActivityIndicator,
     Alert,
@@ -23,6 +24,23 @@ const NoteScreen = () => {
     const [newNote, setNewNote] = useState("")
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+
+    useEffect(() => {
+        fetchNotes()
+    }, [])
+
+    const fetchNotes = async () => {
+        setLoading(true)
+        const response = await noteService.getNotes()
+        if (response.error) {
+            setError(response.error)
+            Alert.alert("Error", response.error)
+        } else {
+            setNotes(response.data)
+            setError(null)
+        }
+        setLoading(false)
+    }
 
     const addNote = () => {
         if (newNote.trim() === "") return
