@@ -26,21 +26,20 @@ const NoteScreen = () => {
     const [error, setError] = useState(null)
 
     useEffect(() => {
+        const fetchNotes = async () => {
+            setLoading(true)
+            const response = await noteService.getNotes()
+            if (response.error) {
+                setError(response.error)
+                Alert.alert("Error", response.error)
+            } else {
+                setNotes(response.data)
+                setError(null)
+            }
+            setLoading(false)
+        }
         fetchNotes()
     }, [])
-
-    const fetchNotes = async () => {
-        setLoading(true)
-        const response = await noteService.getNotes()
-        if (response.error) {
-            setError(response.error)
-            Alert.alert("Error", response.error)
-        } else {
-            setNotes(response.data)
-            setError(null)
-        }
-        setLoading(false)
-    }
 
     const addNote = () => {
         if (newNote.trim() === "") return
