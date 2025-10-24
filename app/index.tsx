@@ -7,7 +7,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Image source={PostItImg} />
+            <Image source={PostItImg} style={styles.image} />
             <Text style={styles.title}>Welcome to My Notes app</Text>
             <Text style={styles.subtitle}>
                 Capture your thoughts, anytime, anywhere
