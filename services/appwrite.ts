@@ -10,6 +10,12 @@ const config = {
     },
 }
 
+if (!config.endpoint) {
+    throw new Error("Appwrite endpoint is not defined. Please set EXPO_PUBLIC_APPWRITE_ENDPOINT in your environment.");
+}
+if (!config.projectId) {
+    throw new Error("Appwrite projectId is not defined. Please set EXPO_PUBLIC_APPWRITE_PROJECT_ID in your environment.");
+}
 const client = new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
