@@ -44,15 +44,14 @@ const NoteScreen = () => {
     const addNote = async () => {
         if (newNote.trim() === "") return
         try {
-            await noteService.createNote({ text: newNote })
+            await noteService.upsertNote(undefined, { text: newNote })
+            Alert.alert("Success", "Note added successfully")
+            setNewNote("")
+            setModalVisible(false)
         } catch (error) {
             setError(error)
             Alert.alert("Error creating note", error)
         }
-        Alert.alert("Success", "Note added successfully")
-
-        setNewNote("")
-        setModalVisible(false)
     }
 
     const deleteNote = async (id: string) => {
@@ -67,12 +66,20 @@ const NoteScreen = () => {
     const editNote = async (id: string, editedText: string) => {
         if (!editedText.trim()) return
         try {
-            await noteService.updateNote(id, { text: editedText })
+            const updatedNote = await noteService.upsertNote(id, {
+                text: editedText,
+            })
+            setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                    note.$id === id
+                        ? { ...note, text: updatedNote?.text ?? editedText }
+                        : note
+                )
+            )
         } catch (error) {
             setError(error)
             Alert.alert("Error updating note", error)
         }
-        setNewNote("")
     }
 
     return (
@@ -80,7 +87,7 @@ const NoteScreen = () => {
             {loading ? (
                 <ActivityIndicator size="large" color="#EA9010" />
             ) : error ? (
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={styles.errorText}>{error.message}</Text>
             ) : notes.length > 0 ? (
                 <NoteList
                     notes={notes}

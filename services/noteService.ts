@@ -22,16 +22,20 @@ const noteService = {
         }
         return { data: response }
     },
-    async createNote(data: object) {
-        const id = uuidv4()
-        const response = await databaseService.createNote(
+    async upsertNote(id: string | undefined, data: object) {
+        if (!id) {
+            id = uuidv4()
+        }
+        const response = await databaseService.upsertNote(
             dbId,
             tableId,
             data,
-            id
+            id,
+            !!id
         )
+
         if (!response || response?.error) {
-            return { error: response?.error || "Failed to create note" }
+            return { error: response?.error || "Failed to upsert note" }
         }
         return { data: response }
     },
@@ -39,18 +43,6 @@ const noteService = {
         const response = await databaseService.deleteNote(dbId, tableId, id)
         if (!response || response?.error) {
             return { error: response?.error || "Failed to delete note" }
-        }
-        return { data: response }
-    },
-    async updateNote(id: string, data: object) {
-        const response = await databaseService.updateNote(
-            dbId,
-            tableId,
-            id,
-            data
-        )
-        if (!response || response?.error) {
-            return { error: response?.error || "Failed to update note" }
         }
         return { data: response }
     },
