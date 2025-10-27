@@ -1,6 +1,7 @@
 import AddNoteModal from "@/components/AddNoteModal"
 import NoteList from "@/components/NoteList"
 import noteService from "@/services/noteService"
+import type { Notes } from "@/types/appwrite"
 import { useRouter } from "expo-router"
 import { useEffect, useState } from "react"
 import {
@@ -12,14 +13,9 @@ import {
     View,
 } from "react-native"
 
-interface Note {
-    $id: string
-    text: string
-}
-
 const NoteScreen = () => {
     const router = useRouter()
-    const [notes, setNotes] = useState<Note[]>([])
+    const [notes, setNotes] = useState<Notes[]>([])
     const [modalVisible, setModalVisible] = useState(false)
     const [newNote, setNewNote] = useState("")
     const [loading, setLoading] = useState(true)
@@ -43,42 +39,47 @@ const NoteScreen = () => {
 
     const addNote = async () => {
         if (newNote.trim() === "") return
-        try {
-            await noteService.upsertNote(undefined, { text: newNote })
-            Alert.alert("Success", "Note added successfully")
+        const response = await noteService.upsertNote(undefined, {
+            text: newNote,
+        })
+        if (response.error) {
+            setError(response.error)
+            Alert.alert("Error creating note", response.error)
+        } else {
+            setNotes([...notes, response?.data])
             setNewNote("")
             setModalVisible(false)
-        } catch (error) {
-            setError(error)
-            Alert.alert("Error creating note", error)
+            Alert.alert("Success", "Note added successfully")
         }
     }
 
     const deleteNote = async (id: string) => {
-        try {
-            await noteService.deleteNote(id)
-        } catch (error) {
-            setError(error)
-            Alert.alert("Error deleting note", error)
+        const response = await noteService.deleteNote(id)
+        if (response.error) {
+            setError(response.error)
+            Alert.alert("Error deleting note", response.error)
+        } else {
+            setNotes((prevNotes) => prevNotes.filter((note) => note.$id !== id))
         }
     }
 
     const editNote = async (id: string, editedText: string) => {
         if (!editedText.trim()) return
-        try {
-            const updatedNote = await noteService.upsertNote(id, {
-                text: editedText,
-            })
+        const response = await noteService.upsertNote(id, {
+            text: editedText,
+        })
+        if (response.error) {
+            setError(response.error)
+            Alert.alert("Error updating note", response.error)
+        } else {
+            Alert.alert("Success", "Note updated successfully")
             setNotes((prevNotes) =>
                 prevNotes.map((note) =>
                     note.$id === id
-                        ? { ...note, text: updatedNote?.text ?? editedText }
+                        ? { ...note, text: response?.data?.text ?? editedText }
                         : note
                 )
             )
-        } catch (error) {
-            setError(error)
-            Alert.alert("Error updating note", error)
         }
     }
 

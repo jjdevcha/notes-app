@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid"
+import { ID } from "react-native-appwrite"
 import databaseService from "./databaseService"
 
 const dbId = process.env.EXPO_PUBLIC_APPWRITE_DB_ID
@@ -24,7 +24,7 @@ const noteService = {
     },
     async upsertNote(id: string | undefined, data: object) {
         if (!id) {
-            id = uuidv4()
+            id = ID.unique()
         }
         const response = await databaseService.upsertNote(
             dbId,
