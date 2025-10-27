@@ -1,5 +1,5 @@
 import { Platform } from "react-native"
-import { Client, TablesDB } from "react-native-appwrite"
+import { Client, Databases } from "react-native-appwrite"
 
 const config = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
@@ -10,6 +10,12 @@ const config = {
     },
 }
 
+if (!config.endpoint) {
+    throw new Error("Appwrite endpoint is not defined. Please set EXPO_PUBLIC_APPWRITE_ENDPOINT in your environment.");
+}
+if (!config.projectId) {
+    throw new Error("Appwrite projectId is not defined. Please set EXPO_PUBLIC_APPWRITE_PROJECT_ID in your environment.");
+}
 const client = new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId)
@@ -23,6 +29,6 @@ switch (Platform.OS) {
         break
 }
 
-const database = new TablesDB(client)
+const database = new Databases(client)
 
 export { client, config, database }

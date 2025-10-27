@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import {
+    Alert,
     StyleSheet,
     Text,
     TextInput,
@@ -7,7 +8,16 @@ import {
     View,
 } from "react-native"
 
-const NoteItem = ({ note, onDelete, onEdit }) => {
+interface NoteItemProps {
+    note: {
+        $id: string
+        text: string
+    }
+    onDelete: (id: string) => void
+    onEdit: (id: string, newText: string) => void
+}
+
+const NoteItem = ({ note, onDelete, onEdit }: NoteItemProps) => {
     const [isEditing, setIsEditing] = useState(false)
     const [editedText, setEditedText] = useState(note.text)
     const inputRef = useRef<TextInput>(null)
@@ -16,6 +26,24 @@ const NoteItem = ({ note, onDelete, onEdit }) => {
         if (editedText.trim() === "") return
         onEdit(note.$id, editedText)
         setIsEditing(false)
+    }
+
+    const handleDelete = (noteId: string) => {
+        Alert.alert(
+            "Delete Note",
+            "Are you sure you want to delete this note?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => onDelete(noteId),
+                },
+            ]
+        )
     }
 
     return (
@@ -48,7 +76,7 @@ const NoteItem = ({ note, onDelete, onEdit }) => {
                         <Text style={styles.edit}>✏️</Text>
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity onPress={() => onDelete(note.$id)}>
+                <TouchableOpacity onPress={() => handleDelete(note.$id)}>
                     <Text style={styles.delete}>❌</Text>
                 </TouchableOpacity>
             </View>
