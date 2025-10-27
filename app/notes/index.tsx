@@ -41,43 +41,45 @@ const NoteScreen = () => {
         fetchNotes()
     }, [])
 
-    const addNote = () => {
+    const addNote = async () => {
         if (newNote.trim() === "") return
-        // Call API to add note
-        setNewNote("")
-        setModalVisible(false)
+        try {
+            await noteService.upsertNote(undefined, { text: newNote })
+            Alert.alert("Success", "Note added successfully")
+            setNewNote("")
+            setModalVisible(false)
+        } catch (error) {
+            setError(error)
+            Alert.alert("Error creating note", error)
+        }
     }
 
-    const deleteNote = (id) => {
-        Alert.alert(
-            "Delete Note",
-            "Are you sure you want to delete this note?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
-                },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => {
-                        // Call API to delete note
-                        setNotes((prevNotes) =>
-                            prevNotes.filter((note) => note.$id !== id)
-                        )
-                    },
-                },
-            ]
-        )
+    const deleteNote = async (id: string) => {
+        try {
+            await noteService.deleteNote(id)
+        } catch (error) {
+            setError(error)
+            Alert.alert("Error deleting note", error)
+        }
     }
-    const editNote = (id, newText) => {
-        if (!newText.trim()) return
-        // Call API to edit note
-        setNotes((prevNotes) =>
-            prevNotes.map((note) =>
-                note.$id === id ? { ...note, text: newText } : note
+
+    const editNote = async (id: string, editedText: string) => {
+        if (!editedText.trim()) return
+        try {
+            const updatedNote = await noteService.upsertNote(id, {
+                text: editedText,
+            })
+            setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                    note.$id === id
+                        ? { ...note, text: updatedNote?.text ?? editedText }
+                        : note
+                )
             )
-        )
+        } catch (error) {
+            setError(error)
+            Alert.alert("Error updating note", error)
+        }
     }
 
     return (
@@ -85,7 +87,7 @@ const NoteScreen = () => {
             {loading ? (
                 <ActivityIndicator size="large" color="#EA9010" />
             ) : error ? (
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={styles.errorText}>{error.message}</Text>
             ) : notes.length > 0 ? (
                 <NoteList
                     notes={notes}
@@ -101,8 +103,6 @@ const NoteScreen = () => {
             >
                 <Text style={styles.addButtonText}>✚ Add Note</Text>
             </TouchableOpacity>
-
-            {/* Modal */}
             <AddNoteModal
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
