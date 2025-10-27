@@ -13,16 +13,26 @@ const databaseService = {
             return { error: error || "Unknown error" }
         }
     },
-    async createNote(dbId: string, tableId: string, data: object, id: string) {
+    async upsertNote(
+        dbId: string,
+        tableId: string,
+        data: object,
+        id: string,
+        isUpdate: boolean
+    ) {
         try {
-            return await database.createRow({
+            return await database.upsertRow({
                 databaseId: dbId,
                 tableId: tableId,
                 rowId: id,
                 data,
             })
         } catch (error) {
-            console.error("Error creating document:", error)
+            if (isUpdate) {
+                console.error("Error updating document:", error)
+            } else {
+                console.error("Error creating document:", error)
+            }
             return { error: error || "Unknown error" }
         }
     },
@@ -35,19 +45,6 @@ const databaseService = {
             })
         } catch (error) {
             console.error("Error deleting document:", error)
-            return { error: error || "Unknown error" }
-        }
-    },
-    async updateNote(dbId: string, tableId: string, id: string, data: object) {
-        try {
-            return await database.updateRow({
-                databaseId: dbId,
-                tableId: tableId,
-                rowId: id,
-                data: data,
-            })
-        } catch (error) {
-            console.error("Error updating document:", error)
             return { error: error || "Unknown error" }
         }
     },
