@@ -10,10 +10,13 @@ const authService = {
                 password,
             })
             return response
-        } catch (error) {
+        } catch (error: unknown) {
+            let message = "Registration failed. Please try again."
+            if (error instanceof Error) {
+                message = error.message
+            }
             return {
-                error:
-                    error.message || "Registration failed. Please try again.",
+                error: message,
             }
         }
     },
@@ -24,9 +27,13 @@ const authService = {
                 password,
             })
             return response
-        } catch (error) {
+        } catch (error: unknown) {
+            let message = "Login failed. Please try again."
+            if (error instanceof Error) {
+                message = error.message
+            }
             return {
-                error: error.message || "Login failed. Please try again.",
+                error: message,
             }
         }
     },
@@ -42,9 +49,11 @@ const authService = {
         try {
             await account.deleteSession({ sessionId: "current" })
         } catch (error) {
-            return {
-                error: error.message || "Logout failed. Please try again.",
+            let message = "Logout failed. Please try again."
+            if (error instanceof Error) {
+                message = error.message
             }
+            throw new Error(message)
         }
     },
 }
