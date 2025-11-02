@@ -1,5 +1,6 @@
 import AddNoteModal from "@/components/AddNoteModal"
 import NoteList from "@/components/NoteList"
+import { useAuth } from "@/contexts/AuthContext"
 import noteService from "@/services/noteService"
 import type { Notes } from "@/types/appwrite"
 import { useRouter } from "expo-router"
@@ -15,6 +16,7 @@ import {
 
 const NoteScreen = () => {
     const router = useRouter()
+    const { user, loading: authLoading } = useAuth()
     const [notes, setNotes] = useState<Notes[]>([])
     const [modalVisible, setModalVisible] = useState(false)
     const [newNote, setNewNote] = useState("")
@@ -34,8 +36,13 @@ const NoteScreen = () => {
             }
             setLoading(false)
         }
-        fetchNotes()
-    }, [])
+        if (user) {
+            fetchNotes()
+        }
+        if (!user && !authLoading) {
+            router.replace("/auth")
+        }
+    }, [user, authLoading])
 
     const addNote = async () => {
         if (newNote.trim() === "") return
