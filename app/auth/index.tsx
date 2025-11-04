@@ -44,7 +44,7 @@ const AuthScreen = () => {
         }
 
         if (response && "error" in response) {
-            setError(response?.error)
+            setError(response.error)
             Alert.alert("Authentication Error", response.error)
             resetInputs()
             return

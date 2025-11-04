@@ -42,7 +42,7 @@ const NoteScreen = () => {
         if (!user && !authLoading) {
             router.replace("/auth")
         }
-    }, [user, authLoading])
+    }, [user, authLoading, router])
 
     const addNote = async () => {
         if (newNote.trim() === "") return

@@ -1,10 +1,11 @@
 import authService from "@/services/authService"
 import { createContext, useContext, useEffect, useState } from "react"
+import type { Models } from "react-native-appwrite"
 
 type AuthResponse = { success?: boolean; error?: string }
 
 interface AuthContextInterface {
-    user: any
+    user: Models.User | null
     loading: boolean
     register: (email: string, password: string) => Promise<AuthResponse>
     login: (email: string, password: string) => Promise<AuthResponse>
@@ -20,7 +21,7 @@ const AuthContext = createContext<AuthContextInterface>({
 })
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<Models.User | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
 
     useEffect(() => {

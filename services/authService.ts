@@ -41,13 +41,7 @@ const authService = {
         try {
             return await account.get()
         } catch (error: unknown) {
-            let message = "Failed to fetch user. Please try again."
-            if (error instanceof Error) {
-                message = error.message
-            }
-            return {
-                error: message,
-            }
+            throw new Error("Failed to fetch user.")
         }
     },
     async logout() {
