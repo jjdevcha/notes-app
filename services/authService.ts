@@ -40,9 +40,8 @@ const authService = {
     async getUser() {
         try {
             return await account.get()
-        } catch (error) {
-            console.error("Error fetching user:", error)
-            return null
+        } catch (error: unknown) {
+            throw new Error("Failed to fetch user.")
         }
     },
     async logout() {

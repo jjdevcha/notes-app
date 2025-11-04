@@ -5,8 +5,8 @@ const config = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
     projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
     db: process.env.EXPO_PUBLIC_APPWRITE_DB_ID,
-    col: {
-        notes: process.env.EXPO_PUBLIC_APPWRITE_COL_NOTES_ID,
+    tables: {
+        notes: process.env.EXPO_PUBLIC_APPWRITE_TABLE_NOTES_ID,
     },
 }
 
